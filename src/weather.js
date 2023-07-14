@@ -30,6 +30,7 @@ function sortWeatherData(data) {
         humidity: data.main.humidity,
         wind_speed: data.wind.speed * 3.6,
         chance: data.pop,
+        date: format(fromUnixTime(data.dt), "MM/dd/yyyy"),
         currentTime: format(fromUnixTime(data.dt), "h:mm a"),
         sunrise: format(fromUnixTime(data.sys.sunrise), "h:mm a"),
         sunset: format(fromUnixTime(data.sys.sunset), "h:mm a"),

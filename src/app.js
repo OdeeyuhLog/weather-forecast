@@ -1,82 +1,132 @@
 import getWeatherData from "./weather";
-import setContent from "./contentLoader";
+import populateSections from "./contentLoader";
 
 function renderHomePage() {
     const container = document.createElement("div");
     container.id = "container";
 
-    const header = document.createElement("header");
+    const nav = document.createElement("nav");
 
-    const logoImg = document.createElement("img");
-    logoImg.src = "";
-    logoImg.alt = "";
+    const heading = document.createElement("h2");
+    heading.textContent = "Weather App";
 
     const form = document.createElement("form");
     form.action = "";
-
-    const input = document.createElement("input");
-    input.type = "text";
-
-    const submitButton = document.createElement("input");
-    submitButton.type = "submit";
-    submitButton.value = "Enter";
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         try {
             const data = await getWeatherData(input.value);
             input.value = "";
-            setContent(data);
+            populateSections(data);
         } catch (error) {
             console.log(error);
         }
     });
 
+    const input = document.createElement("input");
+    input.type = "text";
+
+    const button = document.createElement("button");
+    button.textContent = "Search";
+
     form.appendChild(input);
-    form.appendChild(submitButton);
+    form.appendChild(button);
 
-    header.appendChild(logoImg);
-    header.appendChild(form);
+    nav.appendChild(heading);
+    nav.appendChild(form);
 
-    const main = document.createElement("main");
+    const main = document.createElement("div");
+    main.id = "main";
 
-    const section1 = document.createElement("section");
+    const weatherDisplay = document.createElement("section");
+    weatherDisplay.id = "weather-display";
 
-    const tempHeading = document.createElement("h2");
-    tempHeading.textContent = "Temp";
+    const locationDisplay = document.createElement("p");
+    locationDisplay.id = "location-display";
 
-    const detailsSection = document.createElement("section");
-    detailsSection.textContent = "Details";
+    const statusDisplay = document.createElement("h2");
+    statusDisplay.id = "status-display";
 
-    section1.appendChild(tempHeading);
-    section1.appendChild(detailsSection);
+    const weatherIcon = document.createElement("img");
+    weatherIcon.src = "";
+    weatherIcon.alt = "";
+    weatherIcon.id = "icon-display";
 
-    const section2 = document.createElement("section");
+    const tempContainer = document.createElement("div");
 
-    const div1 = document.createElement("div");
-    div1.textContent = "Today";
+    const tempDisplay = document.createElement("h2");
+    tempDisplay.id = "temp-display";
 
-    const div2 = document.createElement("div");
-    div2.textContent = "Tomorrow";
+    const minTemp = document.createElement("p");
+    minTemp.id = "min_temp";
 
-    const div3 = document.createElement("div");
-    div3.textContent = "The day after Tomorrow";
+    const maxTemp = document.createElement("p");
+    maxTemp.id = "max_temp";
 
-    section2.appendChild(div1);
-    section2.appendChild(div2);
-    section2.appendChild(div3);
+    tempContainer.appendChild(tempDisplay);
+    tempContainer.appendChild(minTemp);
+    tempContainer.appendChild(maxTemp);
 
-    main.appendChild(section1);
-    main.appendChild(section2);
+    const timeDisplay = document.createElement("p");
+    timeDisplay.id = "time-display";
 
-    const footer = document.createElement("footer");
+    weatherDisplay.appendChild(locationDisplay);
+    weatherDisplay.appendChild(statusDisplay);
+    weatherDisplay.appendChild(weatherIcon);
+    weatherDisplay.appendChild(tempContainer);
+    weatherDisplay.appendChild(timeDisplay);
 
-    container.appendChild(header);
+    const detailsDisplay = document.createElement("section");
+    detailsDisplay.id = "details-display";
+
+    const detailCards = [
+        { imgSrc: "", id: "feels", label: "Feels Like" },
+        { imgSrc: "", id: "sunrise", label: "Sunrise" },
+        { imgSrc: "", id: "sunset", label: "Sunset" },
+        { imgSrc: "", id: "humidity", label: "Humidity" },
+        { imgSrc: "", id: "wind-speed", label: "Wind Speed" },
+    ];
+
+    detailCards.forEach((cardData) => {
+        const detailCard = document.createElement("div");
+        detailCard.classList.add("detail-card");
+
+        const cardImg = document.createElement("img");
+        cardImg.src = cardData.imgSrc;
+        cardImg.alt = "";
+
+        const cardHeading = document.createElement("h2");
+        cardHeading.id = cardData.id;
+
+        const cardLabel = document.createElement("p");
+        cardLabel.textContent = cardData.label;
+
+        detailCard.appendChild(cardImg);
+        detailCard.appendChild(cardHeading);
+        detailCard.appendChild(cardLabel);
+
+        detailsDisplay.appendChild(detailCard);
+    });
+
+    const forecastDisplay = document.createElement("section");
+    forecastDisplay.id = "forecast-display";
+
+    main.appendChild(weatherDisplay);
+    main.appendChild(detailsDisplay);
+    main.appendChild(forecastDisplay);
+
+    container.appendChild(nav);
     container.appendChild(main);
-    container.appendChild(footer);
 
     // Append the container element to the document body or any desired parent element
     document.body.appendChild(container);
+    initPageContent();
+}
+
+async function initPageContent() {
+    const initData = await getWeatherData();
+    populateSections(initData);
 }
 
 export default function startApp() {
