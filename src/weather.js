@@ -23,12 +23,33 @@ function sortWeatherData(data) {
             id: data.weather[0].id,
         },
         icon: data.weather[0].icon,
-        temp: Math.round((data.main.temp - 273.15) * 10) / 10,
-        temp_max: Math.round((data.main.temp_max - 273.15) * 10) / 10,
-        temp_min: Math.round((data.main.temp_min - 273.15) * 10) / 10,
-        feels: Math.round((data.main.feels_like - 273.15) * 10) / 10,
+        temp: {
+            c: Math.round((data.main.temp - 273.15) * 10) / 10,
+            f: Math.round((((data.main.temp - 273.15) * 9) / 5 + 32) * 10) / 10,
+        },
+        temp_max: {
+            c: Math.round((data.main.temp_max - 273.15) * 10) / 10,
+            f:
+                Math.round(
+                    (((data.main.temp_max - 273.15) * 9) / 5 + 32) * 10
+                ) / 10,
+        },
+        temp_min: {
+            c: Math.round((data.main.temp_min - 273.15) * 10) / 10,
+            f:
+                Math.round(
+                    (((data.main.temp_min - 273.15) * 9) / 5 + 32) * 10
+                ) / 10,
+        },
+        feels: {
+            c: Math.round((data.main.feels_like - 273.15) * 10) / 10,
+            f:
+                Math.round(
+                    (((data.main.feels_like - 273.15) * 9) / 5 + 32) * 10
+                ) / 10,
+        },
         humidity: data.main.humidity,
-        wind_speed: data.wind.speed * 3.6,
+        wind_speed: Math.round(data.wind.speed * 3.6 * 10) / 10,
         chance: data.pop,
         date: format(fromUnixTime(data.dt), "MM/dd/yyyy"),
         currentTime: format(fromUnixTime(data.dt), "h:mm a"),

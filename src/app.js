@@ -2,6 +2,7 @@ import getWeatherData from "./weather";
 import populateSections from "./contentLoader";
 
 function renderHomePage() {
+    let currentLocation = "London";
     const container = document.createElement("div");
     container.id = "container";
 
@@ -13,28 +14,21 @@ function renderHomePage() {
     const form = document.createElement("form");
     form.action = "";
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        try {
-            const data = await getWeatherData(input.value);
-            input.value = "";
-            populateSections(data);
-        } catch (error) {
-            console.log(error);
-        }
-    });
-
     const input = document.createElement("input");
     input.type = "text";
 
     const button = document.createElement("button");
     button.textContent = "Search";
 
+    const updateTempBtn = document.createElement("button");
+    updateTempBtn.textContent = "Switch to F°";
+
     form.appendChild(input);
     form.appendChild(button);
 
     nav.appendChild(heading);
     nav.appendChild(form);
+    nav.appendChild(updateTempBtn);
 
     const main = document.createElement("div");
     main.id = "main";
@@ -105,6 +99,31 @@ function renderHomePage() {
         detailCard.appendChild(cardImg);
         detailCard.appendChild(cardHeading);
         detailCard.appendChild(cardLabel);
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            try {
+                updateTempBtn.textContent = "Switch to F°";
+                currentLocation = input.value;
+                const data = await getWeatherData(input.value);
+                input.value = "";
+                populateSections(data);
+            } catch (error) {
+                console.log(error);
+            }
+        });
+
+        updateTempBtn.addEventListener("click", async () => {
+            const data = await getWeatherData(currentLocation);
+
+            if (updateTempBtn.textContent.includes("F")) {
+                updateTempBtn.textContent = "Switch to C°";
+                populateSections(data, "F");
+            } else {
+                updateTempBtn.textContent = "Switch to F°";
+                populateSections(data, "C");
+            }
+        });
 
         detailsDisplay.appendChild(detailCard);
     });
