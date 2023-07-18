@@ -1,8 +1,11 @@
-import getWeatherData from "./weather";
+import { getWeatherData, getForecastData } from "./weather";
 import populateSections from "./contentLoader";
 
+let currentData = {};
+let forecastData = [];
+let currentLocation = "London";
+
 function renderHomePage() {
-    let currentLocation = "London";
     const container = document.createElement("div");
     container.id = "container";
 
@@ -100,32 +103,35 @@ function renderHomePage() {
         detailCard.appendChild(cardHeading);
         detailCard.appendChild(cardLabel);
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            try {
-                updateTempBtn.textContent = "Switch to F°";
-                currentLocation = input.value;
-                const data = await getWeatherData(input.value);
-                input.value = "";
-                populateSections(data);
-            } catch (error) {
-                console.log(error);
-            }
-        });
-
-        updateTempBtn.addEventListener("click", async () => {
-            const data = await getWeatherData(currentLocation);
-
-            if (updateTempBtn.textContent.includes("F")) {
-                updateTempBtn.textContent = "Switch to C°";
-                populateSections(data, "F");
-            } else {
-                updateTempBtn.textContent = "Switch to F°";
-                populateSections(data, "C");
-            }
-        });
-
         detailsDisplay.appendChild(detailCard);
+    });
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+            updateTempBtn.textContent = "Switch to F°";
+            currentLocation = input.value;
+            currentData = await getWeatherData(input.value);
+            input.value = "";
+            forecastData = await getForecastData(
+                currentData.location.lat,
+                currentData.location.lon
+            );
+            populateSections(currentData);
+            console.log(forecastData);
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    updateTempBtn.addEventListener("click", async () => {
+        if (updateTempBtn.textContent.includes("F")) {
+            updateTempBtn.textContent = "Switch to C°";
+            populateSections(currentData, "F");
+        } else {
+            updateTempBtn.textContent = "Switch to F°";
+            populateSections(currentData, "C");
+        }
     });
 
     const forecastDisplay = document.createElement("section");
@@ -144,8 +150,12 @@ function renderHomePage() {
 }
 
 async function initPageContent() {
-    const initData = await getWeatherData();
-    populateSections(initData);
+    currentData = await getWeatherData();
+    forecastData = await getForecastData(
+        currentData.location.lat,
+        currentData.location.lon
+    );
+    populateSections(currentData);
 }
 
 export default function startApp() {
