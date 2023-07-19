@@ -1,5 +1,12 @@
 import { getWeatherData, getForecastData } from "./weather";
-import populateSections from "./contentLoader";
+import { populateForecasts, populateSections } from "./contentLoader";
+import svgFeels from "./assets/utility/thermometer.svg";
+import svgSunrise from "./assets/utility/sunrise.svg";
+import svgSunset from "./assets/utility/sunset.svg";
+import svgHumid from "./assets/utility/raindrop.svg";
+import svgWind from "./assets/utility/wind.svg";
+import svgUmbrella from "./assets/utility/umbrella.svg";
+import "./style.scss";
 
 let currentData = {};
 let forecastData = [];
@@ -45,7 +52,7 @@ function renderHomePage() {
     const statusDisplay = document.createElement("h2");
     statusDisplay.id = "status-display";
 
-    const weatherIcon = document.createElement("img");
+    const weatherIcon = document.createElement("div");
     weatherIcon.src = "";
     weatherIcon.alt = "";
     weatherIcon.id = "icon-display";
@@ -78,18 +85,19 @@ function renderHomePage() {
     detailsDisplay.id = "details-display";
 
     const detailCards = [
-        { imgSrc: "", id: "feels", label: "Feels Like" },
-        { imgSrc: "", id: "sunrise", label: "Sunrise" },
-        { imgSrc: "", id: "sunset", label: "Sunset" },
-        { imgSrc: "", id: "humidity", label: "Humidity" },
-        { imgSrc: "", id: "wind-speed", label: "Wind Speed" },
+        { imgSrc: svgFeels, id: "feels", label: "Feels Like" },
+        { imgSrc: svgSunrise, id: "sunrise", label: "Sunrise" },
+        { imgSrc: svgSunset, id: "sunset", label: "Sunset" },
+        { imgSrc: svgHumid, id: "humidity", label: "Humidity" },
+        { imgSrc: svgWind, id: "wind-speed", label: "Wind Speed" },
+        { imgSrc: svgUmbrella, id: "rain-chance", label: "Rain Chance" },
     ];
 
     detailCards.forEach((cardData) => {
         const detailCard = document.createElement("div");
         detailCard.classList.add("detail-card");
 
-        const cardImg = document.createElement("img");
+        const cardImg = new Image();
         cardImg.src = cardData.imgSrc;
         cardImg.alt = "";
 
@@ -111,16 +119,16 @@ function renderHomePage() {
         try {
             updateTempBtn.textContent = "Switch to F°";
             currentLocation = input.value;
-            currentData = await getWeatherData(input.value);
+            currentData = await getWeatherData(currentLocation);
             input.value = "";
             forecastData = await getForecastData(
                 currentData.location.lat,
                 currentData.location.lon
             );
             populateSections(currentData);
-            console.log(forecastData);
+            populateForecasts(forecastData);
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     });
 
@@ -128,9 +136,11 @@ function renderHomePage() {
         if (updateTempBtn.textContent.includes("F")) {
             updateTempBtn.textContent = "Switch to C°";
             populateSections(currentData, "F");
+            populateForecasts(forecastData, "F");
         } else {
             updateTempBtn.textContent = "Switch to F°";
             populateSections(currentData, "C");
+            populateForecasts(forecastData);
         }
     });
 
@@ -156,6 +166,7 @@ async function initPageContent() {
         currentData.location.lon
     );
     populateSections(currentData);
+    populateForecasts(forecastData);
 }
 
 export default function startApp() {

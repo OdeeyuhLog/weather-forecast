@@ -66,7 +66,7 @@ function sortWeatherData(data) {
 
 async function getForecastData(lat, lon) {
     try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
         const response = await fetch(url, { mode: "cors" });
         const forecastData = await response.json();
         if (!response.ok) {
@@ -140,6 +140,10 @@ function sortForecastData(data) {
             },
             icon: weatherIcons[data.daily.weathercode[index]],
         };
+        if (index === 0) {
+            dailyObject.rainChance =
+                data.daily.precipitation_probability_max[index];
+        }
         dataArr.push(dailyObject);
     });
 
