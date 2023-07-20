@@ -6,6 +6,8 @@ import svgSunset from "./assets/utility/sunset.svg";
 import svgHumid from "./assets/utility/raindrop.svg";
 import svgWind from "./assets/utility/wind.svg";
 import svgUmbrella from "./assets/utility/umbrella.svg";
+import svgDown from "./assets/utility/pressure-low.svg";
+import svgUp from "./assets/utility/pressure-high.svg";
 import "./style.scss";
 
 let currentData = {};
@@ -26,6 +28,7 @@ function renderHomePage() {
 
     const input = document.createElement("input");
     input.type = "text";
+    input.placeholder = "Enter location...";
 
     const button = document.createElement("button");
     button.textContent = "Search";
@@ -58,19 +61,36 @@ function renderHomePage() {
     weatherIcon.id = "icon-display";
 
     const tempContainer = document.createElement("div");
+    tempContainer.id = "temp-container";
 
     const tempDisplay = document.createElement("h2");
     tempDisplay.id = "temp-display";
 
+    const minTempDiv = document.createElement("div");
+
+    const arrowDown = document.createElement("img");
+    arrowDown.src = svgDown;
+
     const minTemp = document.createElement("p");
     minTemp.id = "min_temp";
+
+    minTempDiv.appendChild(arrowDown);
+    minTempDiv.appendChild(minTemp);
+
+    const maxTempDiv = document.createElement("div");
+
+    const arrowUp = document.createElement("img");
+    arrowUp.src = svgUp;
 
     const maxTemp = document.createElement("p");
     maxTemp.id = "max_temp";
 
+    maxTempDiv.appendChild(arrowUp);
+    maxTempDiv.appendChild(maxTemp);
+
     tempContainer.appendChild(tempDisplay);
-    tempContainer.appendChild(minTemp);
-    tempContainer.appendChild(maxTemp);
+    tempContainer.appendChild(minTempDiv);
+    tempContainer.appendChild(maxTempDiv);
 
     const timeDisplay = document.createElement("p");
     timeDisplay.id = "time-display";
@@ -101,15 +121,19 @@ function renderHomePage() {
         cardImg.src = cardData.imgSrc;
         cardImg.alt = "";
 
+        const textContainer = document.createElement("div");
+
         const cardHeading = document.createElement("h2");
         cardHeading.id = cardData.id;
 
         const cardLabel = document.createElement("p");
         cardLabel.textContent = cardData.label;
 
+        textContainer.appendChild(cardHeading);
+        textContainer.appendChild(cardLabel);
+
         detailCard.appendChild(cardImg);
-        detailCard.appendChild(cardHeading);
-        detailCard.appendChild(cardLabel);
+        detailCard.appendChild(textContainer);
 
         detailsDisplay.appendChild(detailCard);
     });
