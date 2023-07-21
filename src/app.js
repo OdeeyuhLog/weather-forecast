@@ -9,6 +9,7 @@ import svgUmbrella from "./assets/utility/umbrella.svg";
 import svgDown from "./assets/utility/pressure-low.svg";
 import svgUp from "./assets/utility/pressure-high.svg";
 import loadingSvg from "./assets/utility/wind-toy.svg";
+import websiteIcon from "./assets/utility/weather-hurricane.svg";
 import "./style.scss";
 
 let currentData = {};
@@ -16,9 +17,15 @@ let forecastData = [];
 let currentLocation = "London";
 
 function renderHomePage() {
+    const link = document.createElement("link");
+    link.type = "image/x-icon";
+    link.rel = "icon";
+    link.href = websiteIcon;
+    document.head.appendChild(link);
+
     const loadingScreen = document.createElement("div");
     const loadingImg = document.createElement("img");
-
+    loadingScreen.id = "loading-screen";
     loadingImg.src = loadingSvg;
 
     loadingScreen.appendChild(loadingImg);
@@ -149,16 +156,28 @@ function renderHomePage() {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         try {
-            updateTempBtn.textContent = "Switch to F°";
             currentLocation = input.value;
+            loadingScreen.classList.remove("fade-out");
+            loadingScreen.style.display = "flex";
             currentData = await getWeatherData(currentLocation);
             input.value = "";
             forecastData = await getForecastData(
                 currentData.location.lat,
                 currentData.location.lon
             );
-            populateSections(currentData);
-            populateForecasts(forecastData);
+
+            if (updateTempBtn.textContent.includes("F")) {
+                populateSections(currentData);
+                populateForecasts(forecastData);
+            } else {
+                populateSections(currentData, "F");
+                populateForecasts(forecastData, "F");
+            }
+
+            loadingScreen.classList.add("fade-out");
+            setTimeout(() => {
+                loadingScreen.style.display = "none";
+            }, 2000);
         } catch (error) {
             alert(error);
         }
@@ -185,6 +204,7 @@ function renderHomePage() {
 
     container.appendChild(nav);
     container.appendChild(main);
+    container.appendChild(loadingScreen);
 
     // Append the container element to the document body or any desired parent element
     document.body.appendChild(container);
@@ -192,6 +212,9 @@ function renderHomePage() {
 }
 
 async function initPageContent() {
+    const loadingScreen = document.getElementById("loading-screen");
+    loadingScreen.classList.remove("fade-out");
+    loadingScreen.style.display = "flex";
     currentData = await getWeatherData();
     forecastData = await getForecastData(
         currentData.location.lat,
@@ -199,6 +222,10 @@ async function initPageContent() {
     );
     populateSections(currentData);
     populateForecasts(forecastData);
+    loadingScreen.classList.add("fade-out");
+    setTimeout(() => {
+        loadingScreen.style.display = "none";
+    }, 2000);
 }
 
 export default function startApp() {
