@@ -2,21 +2,28 @@ import { fromUnixTime, format, parseISO, getDay } from "date-fns";
 
 async function getWeatherData(location = "London") {
     try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=4fda3d2831f2ad3c6e75182437f585d2`;
+        const locationUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=4fda3d2831f2ad3c6e75182437f585d2`;
+
+        const locationData = await fetch(locationUrl, { mode: "cors" });
+        const locationResponse = await locationData.json();
+
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${locationResponse[0].lat}&lon=${locationResponse[0].lon}&appid=4fda3d2831f2ad3c6e75182437f585d2`;
+
         const response = await fetch(url, { mode: "cors" });
         const data = await response.json();
+
         if (!response.ok) {
             alert(data.error.message);
             return;
         }
-        const sortedData = sortWeatherData(data);
+        const sortedData = sortWeatherData(data, locationResponse);
         return sortedData;
     } catch (error) {
         alert(error);
     }
 }
 
-function sortWeatherData(data) {
+function sortWeatherData(data, location) {
     return {
         weather: {
             status: data.weather[0].description,
@@ -56,7 +63,7 @@ function sortWeatherData(data) {
         sunrise: format(fromUnixTime(data.sys.sunrise), "h:mm a"),
         sunset: format(fromUnixTime(data.sys.sunset), "h:mm a"),
         location: {
-            name: data.name,
+            name: location[0].name,
             country: data.sys.country,
             lat: data.coord.lat,
             lon: data.coord.lon,
