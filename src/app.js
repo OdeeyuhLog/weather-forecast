@@ -8,6 +8,7 @@ import svgWind from "./assets/utility/wind.svg";
 import svgUmbrella from "./assets/utility/umbrella.svg";
 import svgDown from "./assets/utility/pressure-low.svg";
 import svgUp from "./assets/utility/pressure-high.svg";
+import loadingSvg from "./assets/utility/wind-toy.svg";
 import "./style.scss";
 
 let currentData = {};
@@ -15,6 +16,13 @@ let forecastData = [];
 let currentLocation = "London";
 
 function renderHomePage() {
+    const loadingScreen = document.createElement("div");
+    const loadingImg = document.createElement("img");
+
+    loadingImg.src = loadingSvg;
+
+    loadingScreen.appendChild(loadingImg);
+
     const container = document.createElement("div");
     container.id = "container";
 
